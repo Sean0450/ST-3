@@ -6,53 +6,50 @@
 #include <thread>
 #include <utility>
 
-TimedDoor::TimedDoor(int time) : m_timeout(time)
-{
-	m_adapter.SetTimedDoorData(time, weak_from_this());
+TimedDoor::TimedDoor(int time) : m_timeout(time){
+  m_adapter.SetTimedDoorData(time, weak_from_this());
 }
 
 bool TimedDoor::isDoorOpened() const { return m_isOpened; }
 
 void TimedDoor::unlock() {
-	if (m_isOpened) {
-		throw std::runtime_error("Door is already opened");
+  if (m_isOpened) {
+	  throw std::runtime_error("Door is already opened");
 	}
-	m_isOpened = true;
+  m_isOpened = true;
 }
 
 void TimedDoor::lock() {
-	if (!m_isOpened) {
-		throw std::runtime_error("Door is already closed");
+  if (!m_isOpened) {
+	  throw std::runtime_error("Door is already closed");
 	}
-	m_isOpened = false;
+  m_isOpened = false;
 }
 
 int TimedDoor::getTimeOut() const { return m_timeout; }
 
 void TimedDoor::throwState() {
-	m_adapter.Timeout();
-	if (m_isOpened) {
-		throw std::runtime_error("Time is out");
+  m_adapter.Timeout();
+  if (m_isOpened) {
+	  throw std::runtime_error("Time is out");
 	}
 }
 
 void DoorTimerAdapter::SetTimedDoorData(int baseSleepTime,
-	std::weak_ptr<TimedDoor> door) {
-	m_door = std::move(door);
-	m_baseSleepTime = baseSleepTime;
+  std::weak_ptr<TimedDoor> door) {
+  m_door = std::move(door);
+  m_baseSleepTime = baseSleepTime;
 }
 
-void DoorTimerAdapter::Timeout()
-{
-	m_timer.tregister(m_baseSleepTime, weak_from_this());
+void DoorTimerAdapter::Timeout(){
+  m_timer.tregister(m_baseSleepTime, weak_from_this());
 }
 
 void Timer::tregister(int time, std::weak_ptr<TimerClient> client) {
-	m_client = std::move(client);
-	sleep(time);
+  m_client = std::move(client);
+  sleep(time);
 }
 
-void Timer::sleep(int time)
-{
-	std::this_thread::sleep_for(std::chrono::seconds(time));
+void Timer::sleep(int time){
+  std::this_thread::sleep_for(std::chrono::seconds(time));
 }
