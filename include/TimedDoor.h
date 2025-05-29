@@ -6,7 +6,6 @@
 #include <iostream>
 #include <memory>
 
-class DoorTimerAdapter;
 class Timer;
 
 class TimerClient {
@@ -43,7 +42,8 @@ class Timer {
   void tregister(int time, std::weak_ptr<TimerClient> client);
 };
 
-class DoorTimerAdapter : public TimerClient, public std::enable_shared_from_this<DoorTimerAdapter> {
+class DoorTimerAdapter : public TimerClient, 
+  public std::enable_shared_from_this<DoorTimerAdapter> {
   std::weak_ptr<TimedDoor> m_door;
   Timer m_timer;
   int m_baseSleepTime = 0;
