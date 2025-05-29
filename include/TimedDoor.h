@@ -23,6 +23,25 @@ class Door {
   virtual bool isDoorOpened() const = 0;
 };
 
+class Timer {
+  std::weak_ptr<TimerClient> m_client;
+  void sleep(int);
+ public:
+  void tregister(int time, std::weak_ptr<TimerClient> client);
+};
+
+class DoorTimerAdapter : public TimerClient,
+ public std::enable_shared_from_this<DoorTimerAdapter> {
+  std::weak_ptr<TimedDoor> m_door;
+  Timer m_timer;
+  int m_baseSleepTime = 0;
+ public:
+  DoorTimerAdapter() = default;
+  void SetTimedDoorData(int baseSleepTime, std::weak_ptr<TimedDoor> door);
+  void Timeout() override;
+};
+
+
 class TimedDoor : public Door, public std::enable_shared_from_this<TimedDoor> {
   DoorTimerAdapter m_adapter;
   int m_timeout = 0;
@@ -34,24 +53,6 @@ class TimedDoor : public Door, public std::enable_shared_from_this<TimedDoor> {
   void unlock() override;
   void throwState();
   int getTimeOut() const;
-};
-
-class Timer {
-  std::weak_ptr<TimerClient> m_client;
-  void sleep(int);
- public:
-  void tregister(int time, std::weak_ptr<TimerClient> client);
-};
-
-class DoorTimerAdapter : public TimerClient,
-  public std::enable_shared_from_this<DoorTimerAdapter> {
-  std::weak_ptr<TimedDoor> m_door;
-  Timer m_timer;
-  int m_baseSleepTime = 0;
- public:
-  DoorTimerAdapter() = default;
-  void SetTimedDoorData(int baseSleepTime, std::weak_ptr<TimedDoor> door);
-  void Timeout() override;
 };
 
 #endif  // INCLUDE_TIMEDDOOR_H_
