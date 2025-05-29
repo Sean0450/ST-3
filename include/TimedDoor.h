@@ -8,6 +8,8 @@
 
 class DoorTimerAdapter;
 class Timer;
+class Door;
+class TimedDoor;
 
 class TimerClient {
  public:
