@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 
+class DoorTimerAdapter;
 class Timer;
 
 class TimerClient {
